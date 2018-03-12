@@ -25,10 +25,12 @@ int Route::calculateDistance() {
 
 		current = Q.front();
 		Q.pop();
-
 		current->setColor("black");
 		int d1, d2, sq1, sq2, sum, sqr, idx = 0; 
 		int min = std::numeric_limits<int>::max();
+		
+		cout << "Visited node: "; 
+		cout << current->getId() << endl; 
 
 		int x1, x2, y1, y2; 
 		x1 = current->getX(); 
