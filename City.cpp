@@ -32,6 +32,10 @@ int City::getY() {
 	return this->y;
 }
 
+int City::getId() {
+	return this->id;
+}
+
 string City::getColor() {
 	return this->color; 
 }
