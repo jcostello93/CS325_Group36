@@ -22,11 +22,20 @@ int main() {
 	}
 
 	myfile.close();
+	
+	//add edge between every city 
+	for (int i = 0; i < cities.size(); i++) {
+		for (int j = i + 1; j < cities.size(); j++) {
+			cities[i]->addEdge(cities[j]);
+			cities[j]->addEdge(cities[i]); 
+		}
+	}
 
-	for (int i = 0; i < cities.size() - 1; i++) {
+	//each city has two edges except for first and last ones
+	/*for (int i = 0; i < cities.size() - 1; i++) {
 		cities[i]->addEdge(cities[i + 1]);
 		cities[i + 1]->addEdge(cities[i]); 
-	}
+	}*/
 
 	Route route(cities); 
 	int total = route.calculateDistance(); 
