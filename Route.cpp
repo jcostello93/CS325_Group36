@@ -12,25 +12,21 @@ Route::Route(vector<City*> c)
 
 int Route::calculateDistance() {
 
-	int distance = 0; 
 	int total = 0; 
 	
-	City *current = this->cities[0]; 
-	vector<City*> route; 
-	route.push_back(current); 
+	City *current = this->cities[0];				//start at first city 
 	queue<City*> Q; 
 	Q.push(current); 
 
 	while (Q.size() > 0) {
-
 		current = Q.front();
 		Q.pop();
-		current->setColor("black");
+
+		current->setColor("black");					//black means visited 
+		route.push_back(current);					//keep track of route
+
 		int d1, d2, sq1, sq2, sum, sqr, idx = 0; 
 		int min = std::numeric_limits<int>::max();
-		
-		cout << "Visited node: "; 
-		cout << current->getId() << endl; 
 
 		int x1, x2, y1, y2; 
 		x1 = current->getX(); 
@@ -41,7 +37,7 @@ int Route::calculateDistance() {
 				x2 = current->getNeighbors()[i]->getX();
 				y2 = current->getNeighbors()[i]->getY();
 
-				d1 = x1 - x2;
+				d1 = x1 - x2;							//calculate distance
 				d2 = y1 - y2;
 				sq1 = d1 * d1;
 				sq2 = d2 * d2;
@@ -70,10 +66,44 @@ int Route::calculateDistance() {
 		}
 
 	}
+
+	int lastStretch = goBackHome(current);					//turn path into cycle
+	total = total + lastStretch; 
 	
 	return total; 
 }
 
 vector<City*> Route::getCities() {
 	return this->cities; 
+}
+
+int Route::goBackHome(City* current) {
+	int x1 = current->getX(); 
+	int y1 = current->getY(); 
+	int x2 = cities[0]->getX(); 
+	int y2 = cities[0]->getY(); 
+
+	int d1, d2, sq1, sq2, sum, sqr = 0;
+
+
+	d1 = x1 - x2;
+	d2 = y1 - y2;
+	sq1 = d1 * d1;
+	sq2 = d2 * d2;
+	sum = sq1 + sq2;
+	sqr = sqrt(sum);
+
+	route.push_back(cities[0]); 
+	cout << "From " << current->getId() << " to " << cities[0]->getId() << endl; 
+
+	return sqr; 
+
+
+}
+
+void Route::printRoute() {
+	for (int i = 0; i < route.size(); i++) {
+		cout << i << ": " << route[i]->getId() << endl; 
+	}
+
 }
