@@ -24,6 +24,7 @@ public:
 	void printCity(); 
 	int getX(); 
 	int getY(); 
+	int getId(); 
 	string getColor(); 
 	void setColor(string); 
 	vector<City*> getNeighbors(); 
