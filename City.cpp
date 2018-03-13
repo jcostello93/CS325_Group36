@@ -7,7 +7,7 @@ City::City(int a, int b, int c) {
 	this->color = "white"; 
 }
 
-void City::addEdge(City *p) {
+void City::addNeighbors(City *p) {
 	this->neighbors.push_back(p); 
 }
 
@@ -15,11 +15,11 @@ void City::printCity() {
 	cout << this->id << " ";
 	cout << this->x << " ";
 	cout << this->y << " ";
-	cout << "Neighbors: "; 
+/*	cout << "Neighbors: "; 
 	
 	for (int i = 0; i < this->neighbors.size(); i++) {
 		cout << this->neighbors[i]->id << " "; 
-	}
+	}*/
 
 	cout << endl; 
 }
@@ -44,7 +44,13 @@ void City::setColor(string c) {
 	this->color = c;
 }
 
-
 vector<City*> City::getNeighbors() {
 	return neighbors; 
+}
+
+void City::setEdgeIn(Edge* in) {
+	edgeIn = in; 
+}
+void City::setEdgeOut(Edge* out) {
+	edgeOut = out; 
 }
