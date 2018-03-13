@@ -35,11 +35,14 @@ int main() {
 		//Create Graph. 			
 		createGraph(cities);
 
+		
 		//Get initial hamiltonian cycle.
-		createRoute(cities);
+		Route* route = createRoute(cities);
+	
 
 		//Optimization algorithm.
-		//                      <---- call function here when it's implemented.
+		optimizeRoute(route);
+
 
 		//Check result (This is for debugging only).
 		//                      <---- call function here when it's implemented.
