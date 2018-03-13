@@ -4,9 +4,11 @@
 
 #include <vector>
 #include "City.hpp"
+#include "Route.hpp"
 
 void createGraph(vector<City*> cities);
-void createRoute(vector<City*> cities);
+Route* createRoute(vector<City*> cities);
+void optimizeRoute(Route*);
 
 
 #endif
