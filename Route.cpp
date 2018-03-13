@@ -2,9 +2,6 @@
 #include <math.h>
 #include <limits>
 
-
-
-
 Route::Route(vector<City*> c)
 {
 	this->cities = c; 
@@ -97,8 +94,6 @@ int Route::goBackHome(City* current) {
 	cout << "From " << current->getId() << " to " << cities[0]->getId() << endl; 
 
 	return sqr; 
-
-
 }
 
 void Route::printRoute() {
