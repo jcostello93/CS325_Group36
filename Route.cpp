@@ -129,7 +129,8 @@ void Route::checkEdges() {
 			int a = checkIntersect(e1, e2); 
 
 			if (a == 1) {
-				cout << "Swap!" << endl; 
+				cout << "Swap!" << endl;
+				system("pause"); 
 			} 
 			else {
 				cout << "No swap!" << endl; 
@@ -158,7 +159,7 @@ int Route::checkIntersect(Edge* e1, Edge* e2) {
 	cout << "e2_x1: " << e2_x1 << "  e2_y1: " << e2_y1 << endl;
 	cout << "e2_x2: " << e2_x2 << "  e2_y2: " << e2_y2 << endl;
 
-	if (e1_x2 != e2_x1 && e1_y2 != e2_y1) {
+	if ((e1_x2 != e2_x1 && e1_y2 != e2_y1) && (e1_x1 != e2_x2 && e1_y1 != e2_y2)) {
 		if (o1 != o2 && o3 != o4) {
 			return 1;
 		}
