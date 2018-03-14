@@ -1,31 +1,27 @@
 #pragma once
-
+#ifndef CITY_HPP
+#define CITY_HPP
 #include <iostream> 
 #include <vector>
 #include <string>
-#ifndef CITY_HPP
-#define CITY_HPP
 using std::vector;
 using std::string;
 using std::cout;
 using std::endl;
 
-class Edge;
 
 class City {
 private: 
-	vector<City*> neighbors;			//includes every other city
-	vector<City*> edges;				//includes only the edges in the route
-	Edge* edgeIn;
-	Edge* edgeOut; 
+	vector<City*> neighbors; 
 	string color; 
 	int id; 
 	int x; 
 	int y; 
+	bool visited;
 
 public: 
 	City(int, int, int); 
-	void addNeighbors(City*); 
+	void addEdge(City*); 
 	void printCity(); 
 	int getX(); 
 	int getY(); 
@@ -33,8 +29,12 @@ public:
 	string getColor(); 
 	void setColor(string); 
 	vector<City*> getNeighbors(); 
-	void setEdgeIn(Edge*); 
-	void setEdgeOut(Edge*); 
+
+	//New
+	bool City::isVisited();
+	void City::setVisited();
+	int calculateDistance(const City &city);
+	City* getNearestUnvisitedNeighbor();
 };
 
 #endif

@@ -58,6 +58,8 @@ bool openFiles(ifstream &inFile, ofstream &outFile)
 		//Trim the leading and trainling blank spaces of the string.
 		fileName = trimString(fileName);
 
+		//fileName = "test-input-2.txt";
+
 		if (fileName.compare("q") == 0 || fileName.compare("Q") == 0) {			
 			done = true;
 		}

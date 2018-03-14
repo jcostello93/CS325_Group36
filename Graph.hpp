@@ -8,7 +8,6 @@
 
 void createGraph(vector<City*> cities);
 Route* createRoute(vector<City*> cities);
-void optimizeRoute(Route*);
-
+void twoOptAlgorithm(Route*);
 
 #endif

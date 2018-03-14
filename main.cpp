@@ -7,6 +7,7 @@
 #include <string> 
 #include <fstream>
 #include <cstdlib>
+#include <time.h>
 
 using std::cout; 
 using std::endl; 
@@ -25,24 +26,42 @@ int main() {
 
 	//Open input and output files (Will ask user for input file name)
 	if (openFiles(inFile, outFile)) {
+		clock_t t1, t2;
+		int f;
+		t1 = clock();
+		printf("Calculating...\n");
 
 		//Read cities from input file.
 		readCitiesFromFile(inFile, &cities);
 
 		//Display cities on screen (This is for debugging only).
-		printCities(cities);	// <---- Comment out (or delete) when submit.
+		//printCities(cities);	// <---- Comment out (or delete) when submit.
+
+		
+		t2 = clock() - t1;
+		cout << "Data imported. Time = " << ((float)t2) / CLOCKS_PER_SEC << endl;
+
 
 		//Create Graph. 			
 		createGraph(cities);
+		t2 = clock() - t1;
+		cout << "Graph created. Time = " << ((float)t2) / CLOCKS_PER_SEC << endl;
 
-		
 		//Get initial hamiltonian cycle.
-		Route* route = createRoute(cities);
-	
+		Route *route = createRoute(cities);
+		//route->newPrintRoute();
 
+		t2 = clock() - t1;
+		cout << "\n\nInitial Route: " << route->getTotalLength() << endl;
+		cout << "Route created. Time = " << ((float)t2) / CLOCKS_PER_SEC << endl;
+		
+
+		cout << "\n\nOptimizing........." << endl;
 		//Optimization algorithm.
-		optimizeRoute(route);
+		twoOptAlgorithm(route);                    // <---- call function here when it's implemented.
 
+		t2 = clock() - t1;
+		cout << "Completed. Time = " << ((float)t2) / CLOCKS_PER_SEC << endl;
 
 		//Check result (This is for debugging only).
 		//                      <---- call function here when it's implemented.
