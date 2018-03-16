@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 #ifndef INPUT_OUTPUT_HPP
 #define INPUT_OUTPUT_HPP
 
@@ -12,11 +13,10 @@
 using namespace std;
 
 void displayTitle();
-bool openFiles(ifstream &inFile, ofstream &outFile);
+void displayEndMsg();
+bool openFiles(ifstream &inFile, ofstream &outFile, char *fileName);
 void readCitiesFromFile(ifstream &inFile, vector<City*> *cities);
-void printCities(vector<City*> cities);
 void deleteCities(vector<City*> cities);
 
 
 #endif
-

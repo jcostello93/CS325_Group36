@@ -1,175 +1,281 @@
 #include "Route.hpp"
-#include <math.h>
-#include <limits>
+#include <climits>
+#include <time.h>
 
 Route::Route()
 {
+	headPtr = new City(-1, 0, 0);
+	tailPtr = new City(-1, 0, 0);
+	initialize();
+}
+
+
+Route::~Route() 
+{
+	delete(headPtr);
+	delete(tailPtr);
+}
+
+void Route::initialize() 
+{
+	this->size = 0;
 	this->totalLength = 0;
+	headPtr->setNextCity(tailPtr);
+	tailPtr->setPrevCity(headPtr);
 }
 
-int Route::getSize()
+int Route::getSize() { return this->size; }
+int Route::getTotalLength() { return this->totalLength; }
+
+void Route::removeCityFromList(City *city) 
 {
-	return this->cities.size();
+	City *prevCity = city->getPrevCity();
+	City *nextCity = city->getNextCity();
+
+	prevCity->setNextCity(nextCity);
+	nextCity->setPrevCity(prevCity);
 }
 
-int Route::getTotalLength()
+void Route::addCity(City* newCity, int distance)
 {
-	City *firstCity;
-	City *lastCity;	
-	int loopBackLength = 0;
-
-	if (this->cities.size() > 0) {
-		firstCity = this->cities.front();
-		lastCity = this->cities.back();
-		loopBackLength = firstCity->calculateDistance(*lastCity);
-	}
-	return this->totalLength + loopBackLength;
-}
-
-void Route::addCity(City* newCity)
-{
-	City *lastCity = NULL;
-
-	if (this->cities.size() > 0) {
-		lastCity = this->cities.back();
-	}
-
+	City *lastCity;
 	if (newCity) {
-		this->cities.push_back(newCity);		
-		if (lastCity) {
-			this->totalLength += lastCity->calculateDistance(*newCity);
-		}
-	}	
-}
+		lastCity = tailPtr->getPrevCity();
 
-City* Route::getCity(int index) {
-	City *city = NULL;
-	if (index >= 0 && index < this->getSize()) {
-		city = this->cities[index];
+		lastCity->setNextCity(newCity);
+		newCity->setPrevCity(lastCity);
+
+		newCity->setNextCity(tailPtr);
+		tailPtr->setPrevCity(newCity);
+
+		this->totalLength += distance;
+		this->size++;
 	}
-	return city;
 }
 
-
-void Route::newPrintRoute() {
-	City *city;
-	int count = 0;
-
-
-	if (this->cities.size() > 0) {
-		//cout << count << ": " << this->cities[0]->getId() << endl;
-
-		city = this->cities[0];
-		cout << count << ": " << city->getId() << endl;
-
-		for (int i = 1; i < (int)this->cities.size(); i++) {			
-			cout << count << ": " << this->cities[i]->getId() << "  -->  " << city->calculateDistance(*this->cities[i]) << endl;
-			city = this->cities[i];
-			count++;
-		}
-		
-		cout << count << ": " << this->cities[0]->getId() << "  -->  " << city->calculateDistance(*this->cities[0]) << endl;
-	}
-	cout << "Total Length: " << this->getTotalLength() << endl;
-}
-
-Route::Route(vector<City*> c)
+City* Route::createCityList(const  vector<City*> cities)
 {
-	this->cities = c; 
+	City *headPtr = new City(-1, 0, 0);
+	City *tailPtr = new City(-1, 0, 0);
+	City *curCity;
+	int numberOfCity = cities.size();
+
+	curCity = headPtr;
+	for (int i = 0; i < numberOfCity; i++) {
+		curCity->setNextCity(cities[i]);
+		cities[i]->setPrevCity(curCity);
+		curCity = cities[i];
+	}
+	curCity->setNextCity(tailPtr);
+	tailPtr->setPrevCity(curCity);
+
+	return headPtr;
 }
 
-int Route::calculateDistance() {
+void Route::addCities(const vector<City*> cities, int startIndex)
+{
+	City *curCity, *nearestCity, *tempCity, *cityList;
+	City *firstCityInList;
+	int minDistance, tempDistance, numberOfCity;
 
-	int total = 0; 
-	
-	City *current = this->cities[0];				//start at first city 
-	queue<City*> Q; 
-	Q.push(current); 
+	initialize();
+	numberOfCity = cities.size();
 
-	while (Q.size() > 0) {
-		current = Q.front();
-		Q.pop();
+	if (numberOfCity > 0) {
+		//Convert vector into linked list.
+		cityList = createCityList(cities);
 
-		current->setColor("black");					//black means visited 
-		route.push_back(current);					//keep track of route
+		//Add the first City in the list
+		firstCityInList = cities[startIndex]; 
+		removeCityFromList(firstCityInList);
+		this->addCity(firstCityInList, 0);
 
-		int d1, d2, sq1, sq2, sum, sqr, idx = 0; 
-		int min = std::numeric_limits<int>::max();
+		curCity = firstCityInList;
+		for (int i = 0; i < (numberOfCity - 1); i++) {
+			tempCity = cityList->getNextCity();
+			minDistance = INT_MAX;
 
-		int x1, x2, y1, y2; 
-		x1 = current->getX(); 
-		y1 = current->getY(); 
-
-		for (int i = 0; i < current->getNeighbors().size(); i++) {
-			if (current->getNeighbors()[i]->getColor() == "white") {
-				x2 = current->getNeighbors()[i]->getX();
-				y2 = current->getNeighbors()[i]->getY();
-
-				d1 = x1 - x2;							//calculate distance
-				d2 = y1 - y2;
-				sq1 = d1 * d1;
-				sq2 = d2 * d2;
-				sum = sq1 + sq2;
-				sqr = sqrt(sum);
-
-				if (i == 0) {
-					min = sqr;
-					idx = i;
+			while (tempCity->getNextCity() != NULL) {
+				tempDistance = curCity->calculateDistance(*tempCity);
+				if (tempDistance <= minDistance) {
+					minDistance = tempDistance;
+					nearestCity = tempCity;
 				}
-				else if (sqr < min) {
-					min = sqr;
-					idx = i;
-				}
-
+				tempCity = tempCity->getNextCity();
 			}
 
+			removeCityFromList(nearestCity);
+			this->addCity(nearestCity, minDistance);
+			curCity = nearestCity;
 		}
 
-		if (min != std::numeric_limits<int>::max()) {
-			total = total + min;
-		}
+		tailPtr->setX(firstCityInList->getX());
+		tailPtr->setY(firstCityInList->getY());
+		this->totalLength += curCity->calculateDistance(*firstCityInList);
 
-		if (current->getNeighbors()[idx]->getColor() == "white") {
-			Q.push(current->getNeighbors()[idx]);
-		}
+		delete(cityList->getNextCity());
+		delete(cityList);
+	}
+}
 
+void Route::saveResultToFile(ofstream &outFile) {
+	City * city;
+	//calculateTotalLength();
+
+	outFile << this->getTotalLength() << endl;
+	city = this->headPtr->getNextCity();
+
+	while (city != this->tailPtr) {
+		outFile << city->getId() << endl;
+		city = city->getNextCity();
+	}
+}
+
+bool Route::twoOptSwap(int i, int k)
+{
+	City *iPrevCity, *iCity, *kCity, *kNextCity;
+	City *tempCity, *nextCity, *curCity;
+
+	int oldXLength, oldYLength, newXLength, newYLength;
+	int improveDistance;
+	int count = 0;
+
+	tempCity = this->headPtr->getNextCity();
+
+	while (count <= k) {
+		if (count == i) {
+			iCity = tempCity;
+			iPrevCity = tempCity->getPrevCity();
+		}
+		else if (count == k) {
+			kCity = tempCity;
+			kNextCity = tempCity->getNextCity();
+		}
+		tempCity = tempCity->getNextCity();
+		count++;
 	}
 
-	int lastStretch = goBackHome(current);					//turn path into cycle
-	total = total + lastStretch; 
-	
-	return total; 
+	oldXLength = iPrevCity->calculateDistance(*iCity);
+	oldYLength = kCity->calculateDistance(*kNextCity);
+
+	newXLength = iPrevCity->calculateDistance(*kCity);
+	newYLength = iCity->calculateDistance(*kNextCity);
+
+	improveDistance = (oldXLength + oldYLength) - (newXLength + newYLength);
+
+	if (improveDistance > 0) {
+
+		iPrevCity->setNextCity(NULL);
+		iCity->setPrevCity(NULL);
+
+		kCity->setNextCity(NULL);
+		kNextCity->setPrevCity(NULL);
+
+		curCity = iCity;
+		nextCity = curCity->getNextCity();
+
+		while (nextCity != NULL) {
+			curCity->setPrevCity(nextCity);
+			tempCity = nextCity->getNextCity();
+
+			nextCity->setNextCity(curCity);
+			curCity = nextCity;
+			nextCity = tempCity;
+		}
+
+		iPrevCity->setNextCity(kCity);
+		kCity->setPrevCity(iPrevCity);
+
+		iCity->setNextCity(kNextCity);
+		kNextCity->setPrevCity(iCity);
+
+		this->totalLength -= improveDistance;
+		return true;
+	}
+	return false;
 }
 
-vector<City*> Route::getCities() {
-	return this->cities; 
+void Route::twoOptAlgorithm(int count) {
+	int size;
+	bool done;
+
+	size = this->size;
+	if (count > size) { count = size; }
+
+	if (size > 2) {		
+		done = false;
+		while (!done) {
+			done = true;
+			for (int i = 1; i < count - 1; i++) {
+				for (int k = i + 1; k < size; k++) {
+					if (this->twoOptSwap(i, k)) {
+						done = false;
+					}
+				}				
+			}
+		}
+	}
 }
 
-int Route::goBackHome(City* current) {
-	int x1 = current->getX(); 
-	int y1 = current->getY(); 
-	int x2 = cities[0]->getX(); 
-	int y2 = cities[0]->getY(); 
+void Route::levelOneOptimization(vector<City*> cities)
+{
+	int minGraph, minDistance, maxCount;
 
-	int d1, d2, sq1, sq2, sum, sqr = 0;
+	minGraph = 0;
+	minDistance = INT_MAX;
+	maxCount = cities.size();
 
-
-	d1 = x1 - x2;
-	d2 = y1 - y2;
-	sq1 = d1 * d1;
-	sq2 = d2 * d2;
-	sum = sq1 + sq2;
-	sqr = sqrt(sum);
-
-	route.push_back(cities[0]); 
-	cout << "From " << current->getId() << " to " << cities[0]->getId() << endl; 
-
-	return sqr; 
+	for (int i = 0; i < maxCount; i++) {
+		this->addCities(cities, i);
+		this->twoOptAlgorithm(1000);
+		if (this->getTotalLength() < minDistance) {
+			minDistance = this->getTotalLength();
+			minGraph = i;
+		}
+	}
+	 
+	this->addCities(cities, minGraph);
+	this->twoOptAlgorithm(1000);
 }
 
-void Route::printRoute() {
-	for (int i = 0; i < route.size(); i++) {
-		cout << i << ": " << route[i]->getId() << endl; 
+void Route::levelTwoOptimization(vector<City*> cities, int count)
+{
+	int minGraph, minDistance, maxCount;
+
+	minGraph = 0;
+	minDistance = INT_MAX;
+	maxCount = cities.size();
+	for (int i = 0; i < maxCount; i += count) {
+		this->addCities(cities, i);
+		this->twoOptAlgorithm(1000);
+		if (this->getTotalLength() < minDistance) {
+			minDistance = this->getTotalLength();
+			minGraph = i;
+		}
 	}
 
+	this->addCities(cities, minGraph);
+	this->twoOptAlgorithm(1000);
+}
+
+void Route::levelThreeOptimization(vector<City*> cities,  int count)
+{
+	int minGraph, minDistance, maxCount;
+	int increment;
+
+	minGraph = 0;
+	minDistance = INT_MAX;
+	maxCount = (cities.size() > 2000) ? 2000 : cities.size();
+	increment = (cities.size() <= 2000) ? 2 : 20;
+
+	for (int i = 0; i < maxCount; i += increment) {
+		this->addCities(cities, i);
+		if (this->getTotalLength() < minDistance) {
+			minDistance = this->getTotalLength();
+			minGraph = i;
+		}
+	}
+
+	this->addCities(cities, minGraph);
+	this->twoOptAlgorithm(count);
 }

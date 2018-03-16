@@ -1,40 +1,39 @@
 #pragma once
 #ifndef CITY_HPP
 #define CITY_HPP
+
 #include <iostream> 
 #include <vector>
 #include <string>
-using std::vector;
-using std::string;
-using std::cout;
-using std::endl;
+#include <math.h>
 
+using namespace std;
 
-class City {
+class City
+{
 private: 
-	vector<City*> neighbors; 
-	string color; 
-	int id; 
-	int x; 
-	int y; 
-	bool visited;
+	int id;
+	int x;
+	int y;
+	City *nextCity;
+	City *prevCity;
 
-public: 
-	City(int, int, int); 
-	void addEdge(City*); 
-	void printCity(); 
-	int getX(); 
-	int getY(); 
-	int getId(); 
-	string getColor(); 
-	void setColor(string); 
-	vector<City*> getNeighbors(); 
+public:
+	City(int, int, int);
+	~City();
+	int getId();
+	int getX();
+	int getY();
+	City* getNextCity();
+	City* getPrevCity();
 
-	//New
-	bool City::isVisited();
-	void City::setVisited();
+	void setX(int x);
+	void setY(int Y);
+	void setNextCity(City* city);
+	void setPrevCity(City* city);
+
 	int calculateDistance(const City &city);
-	City* getNearestUnvisitedNeighbor();
 };
 
 #endif
+

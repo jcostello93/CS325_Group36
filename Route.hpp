@@ -1,46 +1,39 @@
 #pragma once
 #ifndef ROUTE_HPP
 #define ROUTE_HPP
+
 #include "City.hpp"
-#include <queue>
-using std::queue;
+#include <stdlib.h>
+#include <iostream>
+#include <fstream>
+#include <time.h>
+
+using namespace std;
 
 class Route
 {
 private:
-	vector<City*> cities;
-	vector<City*> route;
+	City *headPtr;
+	City *tailPtr;
+	int size;
 	int totalLength;
+	void initialize();
+	void removeCityFromList(City *city);
+	void addCity(City* nextCity, int distance);
+	City* createCityList(const vector<City*> cities);
+	bool twoOptSwap(int, int);
 
 public:
-	Route(vector<City*>);
-	int calculateDistance();
-	vector<City*> getCities();
-	int goBackHome(City*);
-	void printRoute();
+	Route();
+	~Route();
 
-	Route();	
 	int getSize();
 	int getTotalLength();
-	void addCity(City*);
-	City* getCity(int index);
-	void newPrintRoute();
+	void addCities(vector<City*> cities, int startIndex);
+	void saveResultToFile(ofstream &outFile);
+	void twoOptAlgorithm(int count);
+	void levelOneOptimization(vector<City*> cities);
+	void levelTwoOptimization(vector<City*> cities, int count);
+	void levelThreeOptimization(vector<City*> cities,  int count);
 };
-
-/*
-class Route
-{
-private: 
-	vector<City*> cities; 
-	vector<City*> route;
-
-public:
-	Route(vector<City*>);
-	int calculateDistance(); 
-	vector<City*> getCities(); 
-	int goBackHome(City*);
-	void printRoute(); 
-};
-*/
 #endif
-
